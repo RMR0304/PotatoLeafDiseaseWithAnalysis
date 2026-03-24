@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Result</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    font-family:Poppins;
+    background:linear-gradient(135deg,#f5f7fa,#e4efe9);
+    color:#2c3e50;
+}
+
+/* 🌿 subtle leaf texture */
+body::before {
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:url('https://www.transparenttextures.com/patterns/leaf.png');
+    opacity:0.05;
+    z-index:0;
+}
+
+.container {
+    position:relative;
+    z-index:1;
+    width:90%;
+    margin:auto;
+    text-align:center;
+}
+
+h2 {
+    margin-top:20px;
+    color:#2e7d32;
+}
+
+/* STATUS BOX */
+.status-box {
+    margin-top:50px;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* IMAGES */
+.images {
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+img {
+    width:300px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+/* ANIMATION */
+.fade {
+    animation:fade 1.5s;
+}
+
+@keyframes fade {
+    from{opacity:0; transform:scale(0.95);}
+    to{opacity:1; transform:scale(1);}
+}
+
+/* INFO CARDS */
+.info-container {
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+.info-card {
+    width:280px;
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.8);
+    backdrop-filter:blur(10px);
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    text-align:left;
+    transition:0.3s;
+}
+
+.info-card:hover {
+    transform:translateY(-5px) scale(1.03);
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.info-card h3 {
+    margin-bottom:10px;
+    color:#2e7d32;
+}
+
+.info-card ul {
+    padding-left:18px;
+}
+
+.info-card li {
+    margin-bottom:6px;
+}
+
+/* BUTTON */
+.btn {
+    margin-top:25px;
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    background:linear-gradient(45deg,#43a047,#66bb6a);
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    transition:0.3s;
+}
+
+.btn:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 15px #66bb6a;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- ================= ERROR CASES ================= -->
+
+{% if status == "not_leaf" or status == "not_potato" %}
+
+<div class="status-box">
+
+    <h2>Invalid Input!!</h2>
+
+    <p style="opacity:0.7; font-size:14px;">
+        Please upload a clear image of a potato leaf for accurate analysis.
+    </p>
+
+    <img src="{{ img }}">
+
+</div>
+
+<!-- ================= SUCCESS CASE ================= -->
+
+{% elif status == "success" %}
+
+<h2>{{ disease }}</h2>
+
+<p><b>Confidence:</b> {{ (confidence*100)|round(2) }}%</p>
+
+{% if disease_percent %}
+<p><b>Disease Area:</b> {{ disease_percent }}%</p>
+{% endif %}
+
+<div class="images">
+
+<!-- ORIGINAL -->
+<div>
+<h3>Original</h3>
+<img src="{{ img }}">
+</div>
+
+<!-- AFFECTED AREAS -->
+{% if mask_img %}
+<div>
+<h3>Affected Areas</h3>
+<img src="{{ mask_img }}" class="fade">
+</div>
+{% endif %}
+
+</div>
+
+<!-- ================= INFO CARDS ================= -->
+
+{% if info %}
+<div class="info-container">
+
+    <div class="info-card">
+        <h3>Symptoms</h3>
+        <ul>
+        {% for s in info.symptoms %}
+            <li>{{ s }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <div class="info-card">
+        <h3>Cause</h3>
+        <p>{{ info.cause }}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Prevention</h3>
+        <ul>
+        {% for p in info.prevention %}
+            <li>{{ p }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+
+</div>
+{% endif %}
+
+{% endif %}
+
+<!-- COMMON BUTTON -->
+<a href="/upload">
+    <button class="btn">Try Again</button>
+</a>
+
+</div>
+
+</body>
+</html>

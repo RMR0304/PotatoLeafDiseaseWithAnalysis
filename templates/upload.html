@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    font-family:Poppins;
+    background:linear-gradient(135deg,#f5f7fa,#e4efe9);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:#2c3e50;
+}
+
+/* 🌿 subtle leaf texture */
+body::before {
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:url('https://www.transparenttextures.com/patterns/leaf.png');
+    opacity:0.05;
+    z-index:0;
+}
+
+/* Card */
+.card {
+    position:relative;
+    z-index:1;
+    background:rgba(255,255,255,0.85);
+    padding:40px;
+    border-radius:25px;
+    text-align:center;
+    width:380px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 10px 40px rgba(0,0,0,0.1);
+}
+
+h2 {
+    color:#2e7d32;
+}
+
+/* Drag Area */
+.drop-area {
+    border:2px dashed #66bb6a;
+    border-radius:15px;
+    padding:35px;
+    cursor:pointer;
+    transition:0.3s;
+    background:rgba(255,255,255,0.6);
+}
+
+.drop-area:hover {
+    background:rgba(102,187,106,0.1);
+    transform:scale(1.02);
+}
+
+.drop-area.dragover {
+    background:rgba(102,187,106,0.2);
+    border-color:#2e7d32;
+}
+
+.drop-area p {
+    margin:10px 0;
+    font-size:14px;
+    opacity:0.8;
+}
+
+/* Hidden input */
+input[type="file"] {
+    display:none;
+}
+
+/* Preview */
+.preview {
+    margin-top:20px;
+    width:100%;
+    border-radius:15px;
+    display:none;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+/* Button */
+.btn {
+    margin-top:20px;
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    background:linear-gradient(45deg,#43a047,#66bb6a);
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.btn:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 15px #66bb6a;
+}
+
+.btn:disabled {
+    background:gray;
+    cursor:not-allowed;
+}
+
+/* Loader */
+#loading {
+    margin-top:20px;
+    display:none;
+    text-align:center;
+    animation:fadeIn 0.5s ease-in-out;
+}
+
+/* Spinner */
+.loader {
+    width:40px;
+    height:40px;
+    border:4px solid #c8e6c9;
+    border-top:4px solid #43a047;
+    border-radius:50%;
+    margin:auto;
+    animation:spin 1s linear infinite;
+}
+
+#loading p {
+    margin-top:10px;
+    font-size:14px;
+    color:#2e7d32;
+    animation:pulse 1.5s infinite;
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform:rotate(0deg); }
+    100% { transform:rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { opacity:0.5; }
+    50% { opacity:1; }
+    100% { opacity:0.5; }
+}
+
+@keyframes fadeIn {
+    from { opacity:0; transform:translateY(10px); }
+    to { opacity:1; transform:translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2> Upload Leaf Image</h2>
+
+<form action="/predict" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
+
+    <!-- Drag & Drop -->
+    <div class="drop-area" id="drop-area">
+        <p> Drag & Drop Image Here</p>
+        <p>or <b>Click to Upload</b></p>
+        <input type="file" name="image" id="file" required>
+    </div>
+
+    <!-- Preview -->
+    <img id="preview" class="preview">
+
+    <p id="errorMsg" style="color:#d32f2f; font-size:14px; display:none; margin-top:10px;"></p>
+    <!-- Button -->
+    <button class="btn" id="analyzeBtn"> Analyze</button>
+</form>
+
+<!-- Loader -->
+<div id="loading">
+    <div class="loader"></div>
+    <p>Analyzing your leaf...</p>
+</div>
+
+</div>
+
+<script>
+const dropArea = document.getElementById("drop-area");
+const fileInput = document.getElementById("file");
+const preview = document.getElementById("preview");
+const errorMsg = document.getElementById("errorMsg");
+const form = document.querySelector("form");
+
+/* Click to upload */
+dropArea.addEventListener("click", () => fileInput.click());
+
+/* File selection */
+fileInput.addEventListener("change", (e) => {
+    validateAndPreview(e.target.files[0]);
+});
+
+/* Drag events */
+dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.classList.add("dragover");
+});
+
+dropArea.addEventListener("dragleave", () => {
+    dropArea.classList.remove("dragover");
+});
+
+dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.classList.remove("dragover");
+
+    const file = e.dataTransfer.files[0];
+    fileInput.files = e.dataTransfer.files;
+    validateAndPreview(file);
+});
+
+/*  VALIDATION FUNCTION */
+function validateAndPreview(file){
+
+    if(!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+
+    if(!allowedTypes.includes(file.type)){
+        errorMsg.style.display = "block";
+        errorMsg.innerText = " Please upload a valid image file (JPG, PNG, WEBP)";
+
+        preview.style.display = "none";
+        fileInput.value = ""; // reset input
+        return;
+    }
+
+    // Clear error
+    errorMsg.style.display = "none";
+
+    // Preview
+    const url = URL.createObjectURL(file);
+    preview.src = url;
+    preview.style.display = "block";
+}
+
+/*  Prevent submit if invalid */
+form.addEventListener("submit", function(e){
+    const file = fileInput.files[0];
+
+    if(!file){
+        e.preventDefault();
+        errorMsg.style.display = "block";
+        errorMsg.innerText = "Please select an image before submitting";
+        return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+
+    if(!allowedTypes.includes(file.type)){
+        e.preventDefault();
+        errorMsg.style.display = "block";
+        errorMsg.innerText = "Invalid file type!! Please upload a JPG, PNG, or WEBP image.";
+        return;
+    }
+
+    showLoader();
+});
+
+/* Loader */
+function showLoader(){
+    document.getElementById("loading").style.display = "block";
+
+    const btn = document.getElementById("analyzeBtn");
+    btn.disabled = true;
+    btn.innerText = "Processing...";
+}
+</script>
+
+</body>
+</html>

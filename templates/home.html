@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Leaf Diagnosis</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin:0;
+            font-family:'Poppins', sans-serif;
+            color:#2c3e50;
+            text-align:center;
+
+            /* 🌿 Light Botanical Gradient */
+            background: linear-gradient(135deg,#e8f5e9,#d0f0e0,#f5fff9);
+            overflow:hidden;
+        }
+
+        /* 🌱 Light Leaf Texture */
+        body::before {
+            content:"";
+            position:absolute;
+            width:100%;
+            height:100%;
+            background:url('https://www.transparenttextures.com/patterns/leaf.png');
+            opacity:0.05;
+            z-index:0;
+        }
+
+        /* 🌼 Floating Leaves */
+        .leaf {
+            position:absolute;
+            width:120px;
+            opacity:0.12;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .leaf1 { top:10%; left:5%; }
+        .leaf2 { bottom:15%; right:5%; animation-delay:2s; }
+        .leaf3 { top:40%; right:20%; animation-delay:4s; }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0px) rotate(0px); }
+        }
+
+        .container {
+            position:relative;
+            z-index:1;
+            padding-top:120px;
+        }
+
+        h1 {
+            font-size:48px;
+            margin-bottom:10px;
+            color:#2e7d32;
+        }
+
+        p {
+            font-size:18px;
+            opacity:0.8;
+        }
+
+        /* BUTTON */
+        .btn {
+            margin-top:30px;
+            padding:15px 40px;
+            font-size:18px;
+            border:none;
+            border-radius:30px;
+            background: linear-gradient(45deg,#66bb6a,#43a047);
+            color:white;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .btn:hover {
+            transform:scale(1.08);
+            box-shadow:0px 0px 20px #66bb6a;
+        }
+
+        /* FEATURE CARDS */
+        .features {
+            margin-top:80px;
+            display:flex;
+            justify-content:center;
+            gap:30px;
+            flex-wrap:wrap;
+        }
+
+        .card {
+            background:rgba(255,255,255,0.7);
+            padding:25px;
+            border-radius:20px;
+            width:220px;
+            backdrop-filter:blur(10px);
+            transition:0.3s;
+            box-shadow:0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .card:hover {
+            transform:translateY(-8px) scale(1.05);
+            box-shadow:0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h3 {
+            margin-bottom:10px;
+            color:#2e7d32;
+        }
+
+        .card p {
+            font-size:14px;
+            opacity:0.8;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Floating Leaves -->
+<img src="https://cdn-icons-png.flaticon.com/512/2909/2909765.png" class="leaf leaf1">
+<img src="https://cdn-icons-png.flaticon.com/512/2909/2909765.png" class="leaf leaf2">
+<img src="https://cdn-icons-png.flaticon.com/512/2909/2909765.png" class="leaf leaf3">
+
+<div class="container">
+
+    <h1>AI Leaf Disease Detection</h1>
+    <p>Smart diagnosis with segmentation & severity analysis</p>
+
+    <a href="/upload">
+        <button class="btn">Get Started</button>
+    </a>
+
+    <div class="features">
+
+        <div class="card">
+            <h3>Deep Learning</h3>
+            <p>Advanced neural networks for accurate predictions</p>
+        </div>
+
+        <div class="card">
+            <h3>Segmentation</h3>
+            <p>Pinpoint affected leaf regions precisely</p>
+        </div>
+
+        <div class="card">
+            <h3>Disease %</h3>
+            <p>Measure severity for better decisions</p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
