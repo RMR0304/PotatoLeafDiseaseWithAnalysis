@@ -1,0 +1,1 @@
+pip install flask torch torchvision timm opencv-python joblib pillow scikit-learn reportlab segmentation-models-pytorch albumentations
